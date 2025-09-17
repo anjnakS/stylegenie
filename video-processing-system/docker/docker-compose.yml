@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  video-processor:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "3001:3001"    # HTTP API
+      - "1935:1935"    # RTMP
+      - "80:80"        # Nginx (frontend)
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - RTMP_PORT=1935
+      - CLIENT_URL=http://localhost
+      - WEBRTC_LISTEN_IP=0.0.0.0
+      - WEBRTC_ANNOUNCED_IP=localhost
+      - REDIS_URL=redis://redis:6379
+      - GPU_ENABLED=true
+    volumes:
+      - video_uploads:/app/uploads
+      - video_output:/app/output
+      - video_temp:/app/temp
+      - video_logs:/app/logs
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - video_network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - video_network
+
+  nginx-rtmp:
+    image: tiangolo/nginx-rtmp
+    ports:
+      - "1936:1935"    # Alternative RTMP port
+      - "8080:80"      # RTMP stats
+    volumes:
+      - ./nginx-rtmp.conf:/etc/nginx/nginx.conf
+    restart: unless-stopped
+    networks:
+      - video_network
+
+volumes:
+  video_uploads:
+  video_output:
+  video_temp:
+  video_logs:
+  redis_data:
+
+networks:
+  video_network:
+    driver: bridge

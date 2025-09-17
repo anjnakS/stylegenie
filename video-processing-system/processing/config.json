@@ -1,0 +1,43 @@
+{
+  "gpu_enabled": true,
+  "max_workers": 4,
+  "output_formats": ["webrtc", "hls", "dash"],
+  "processing_effects": {
+    "blur": {
+      "enabled": false,
+      "kernel_size": 15
+    },
+    "edge_detection": {
+      "enabled": false,
+      "threshold1": 100,
+      "threshold2": 200
+    },
+    "color_filter": {
+      "enabled": false,
+      "hue_shift": 0
+    },
+    "ml_enhancement": {
+      "enabled": false,
+      "model": "esrgan"
+    }
+  },
+  "streaming": {
+    "webrtc_bitrate": 2000000,
+    "hls_segment_duration": 6,
+    "dash_segment_duration": 4,
+    "rtmp_port": 1935,
+    "webrtc_ports": {
+      "min": 10000,
+      "max": 20000
+    }
+  },
+  "paths": {
+    "uploads": "./uploads",
+    "output": "./output",
+    "temp": "./temp"
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "video_processor.log"
+  }
+}
